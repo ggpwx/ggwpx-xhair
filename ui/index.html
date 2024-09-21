@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crosshair</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #crosshair {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            /* Ensure the crosshair is centered */
+        }
+        .crosshair-line {
+            position: absolute;
+            background-color: var(--xhair-color);
+        }
+        .horizontal {
+            width: var(--xhair-size);
+            height: 2px; /* Thickness of the horizontal line */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .vertical {
+            height: var(--xhair-size);
+            width: 2px; /* Thickness of the vertical line */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="crosshair">
+        <div class="crosshair-line horizontal"></div>
+        <div class="crosshair-line vertical"></div>
+    </div>
+    <script>
+        window.addEventListener('message', (event) => {
+            const crosshair = document.getElementById('crosshair');
+            const horizontalLine = document.querySelector('.horizontal');
+            const verticalLine = document.querySelector('.vertical');
+            
+            if (event.data.action === 'xhairShow') {
+                const settings = event.data.settings || {};
+                const size = settings.size || '20px';
+                const color = settings.color || '#ff0000';
+                
+                crosshair.style.display = 'block';
+                crosshair.style.setProperty('--xhair-color', color);
+                crosshair.style.setProperty('--xhair-size', size);
+
+                if (settings.shape === 'circle') {
+                    crosshair.style.width = size;
+                    crosshair.style.height = size;
+                    crosshair.style.borderRadius = '50%';
+                    crosshair.style.backgroundColor = color;
+                    crosshair.style.border = 'none';
+                    horizontalLine.style.display = 'none';
+                    verticalLine.style.display = 'none';
+                } else if (settings.shape === 'square') {
+                    crosshair.style.width = size;
+                    crosshair.style.height = size;
+                    crosshair.style.borderRadius = '0';
+                    crosshair.style.backgroundColor = color;
+                    crosshair.style.border = 'none';
+                    horizontalLine.style.display = 'none';
+                    verticalLine.style.display = 'none';
+                } else if (settings.shape === 'cross') {
+                    horizontalLine.style.width = size;
+                    horizontalLine.style.height = '2px';
+                    verticalLine.style.height = size;
+                    verticalLine.style.width = '2px';
+                    horizontalLine.style.backgroundColor = color;
+                    verticalLine.style.backgroundColor = color;
+                    horizontalLine.style.display = 'block';
+                    verticalLine.style.display = 'block';
+                    crosshair.style.backgroundColor = 'transparent';
+                    crosshair.style.width = '0';
+                    crosshair.style.height = '0';
+                } else if (settings.shape === 'star') {
+                    crosshair.style.width = size;
+                    crosshair.style.height = size;
+                    crosshair.style.borderRadius = '0';
+                    crosshair.style.backgroundColor = 'transparent';
+                    crosshair.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+                    crosshair.style.backgroundColor = color;
+                    horizontalLine.style.display = 'none';
+                    verticalLine.style.display = 'none';
+                }
+            } else if (event.data.action === 'xhairHide') {
+                crosshair.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
